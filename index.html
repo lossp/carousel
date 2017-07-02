@@ -1,0 +1,157 @@
+<html>
+<head>
+      <script src = https://cdn.bootcss.com/jquery/3.2.0/jquery.js></script>
+  <style>
+      *{
+          padding: 0;
+          margin: 0;
+      }
+      .layout{
+          width: 320px;
+          height: 180px;
+          overflow: hidden;
+      }
+      ul li{
+          list-style: none;
+      }
+      a{
+          text-decoration: none;
+          width: 30px;
+          height: 30px;
+          border: 1px solid white;
+          border-radius: 50%;
+          text-align: center;
+          color: white;
+          line-height: 27px;
+      }
+      img{
+          width: 320px;
+          height: 180px;
+      }
+      li{
+          float: left;
+      }
+      .content{
+          position: relative;
+      }
+      .pre-arrow{
+          float: left;
+      }
+      .aft-arrow{
+          float: right;
+      }
+      .arrow{
+          position: relative;
+          top: -110px;
+          margin: 0 10px;
+      }
+      .scrollbar>li{
+          height: 6px;
+          width: 30px;
+          border: 1px solid white;
+          margin: 0 7px;
+          border-radius: 3px;
+          position: relative;
+          top: -20px;
+          right: -10px;
+          opacity: 0.6;
+      }
+      .active{
+          background-color: white;
+      }
+      .content:after{
+          content: '';
+          display: block;
+          clear: both;
+      }
+  </style>
+</head>
+<body>
+    <div class = 'layout'>
+        <ul class = 'content'>
+            <li data-id = "0"><img src = "http://cdn.jirengu.com/book.jirengu.com/img/2.jpg"></li>
+            <li data-id = "1"><img src = "http://cdn.jirengu.com/book.jirengu.com/img/3.jpg"></li>
+            <li data-id = "2"><img src = "http://cdn.jirengu.com/book.jirengu.com/img/4.jpg"></li>
+            <li data-id = "3"><img src = "http://cdn.jirengu.com/book.jirengu.com/img/5.jpg"></li>            
+        </ul>
+        <span><a href = '#' class = 'pre-arrow arrow'><</a></span>
+        <span><a href = '#' class = 'aft-arrow arrow'>></a></span>
+        <div class = 'footbar'>
+            <ul class = 'scrollbar'>
+                <li class = 'signal active'></li>
+                <li class = 'signal'></li>
+                <li class = 'signal'></li>
+                <li class = 'signal'></li>
+            </ul>
+        </div>
+    </div>
+</body>
+  <script>
+      var imgWidth = $('img').width();
+      var $item = $('.content> li');
+      var $ct = $('.content');
+      var $preBtn = $('.pre-arrow');
+      var $nextBtn = $('.aft-arrow');
+      var imgCount = $item.length;
+      var pageIndex = 0;
+      var $signal = $('.scrollbar .signal');
+      var animateStatus = false;
+
+      $ct.width(($item.length + 2) * imgWidth);
+      $ct.append($item.first().clone());
+      $ct.prepend($item.last().clone());
+      $ct.css({left: -imgWidth});
+
+      $preBtn.on('click', function(){
+          playPrevious(1);
+      })
+      $nextBtn.on('click', function(){
+          playNext(1);
+      })
+      $signal.on('click', function(){
+          var index = $(this).index();
+          if( index > pageIndex){
+              playNext( index - pageIndex);
+          }else if( index < pageIndex){
+              playPrevious( pageIndex - index);
+          }
+      })
+      
+
+      function playPrevious(len){
+          if(animateStatus === true) return;
+          animateStatus = true;
+          $ct.animate({ left: "+=" + len * imgWidth }, function(){
+              pageIndex -= len;
+              if( pageIndex < 0){
+                  $ct.css({ left: -imgWidth * imgCount});
+                  pageIndex = imgCount - 1;
+              }
+              setFootbar();
+              console.log(pageIndex);
+              animateStatus = false;
+          })
+      }
+
+      function playNext(len){
+          if(animateStatus === true) return;
+          animateStatus = true;
+          $ct.animate({ left: "-=" + len * imgWidth }, function(){
+              pageIndex += len;
+              if( pageIndex === imgCount){
+                  $ct.css({left : -imgWidth});
+                  pageIndex = 0;
+              }
+              setFootbar();
+              console.log(pageIndex);
+              animateStatus = false;
+          })
+      }
+
+      function setFootbar(){
+          $signal.removeClass('active')
+                 .eq(pageIndex).addClass('active');
+      }
+
+  </script>
+</html>
